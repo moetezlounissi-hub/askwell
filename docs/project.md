@@ -255,7 +255,7 @@ Two parts: a small loader script + an iframe.
 
 Limits run inside Postgres functions only `service_role` may execute: `create_project`, `reserve_knowledge_source` (plan limits, passed from `PLAN_LIMITS`), `consume_message`, `save_chat_turn`, `match_chunks`. The three that count (`create_project`, `reserve_knowledge_source`, `consume_message`) check and write under a row lock or in one statement, so concurrent requests can't both pass. Public routes resolve the project from `public_key` only.
 
-**Schema changes:** a migration in `supabase/migrations` in the same PR, with its RLS policies and grants, plus regenerated `packages/db/types.ts`. Changing an existing table needs approval first (see `CLAUDE.md`).
+**Schema changes:** a migration in `supabase/migrations` in the same PR, with its RLS policies and grants, plus regenerated `packages/db/types.ts`. Changing an existing table needs approval first (see `AGENTS.md`).
 
 ---
 

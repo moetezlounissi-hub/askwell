@@ -9,7 +9,7 @@ The build order for Askwell. `docs/project.md` describes each feature in detail.
 - Each phase is one board in JSM HQ. The lead creates the board and its tasks there, with the product owner, before the phase starts. The next phase can be broken down while the current one is being built.
 - Tasks and their status live only in JSM HQ. This file never lists tasks.
 - A phase is done when all its tasks are merged and its "Done when" checks pass on the latest Vercel preview. Production goes live only once, in Phase 6.
-- Each phase lists the keys it needs. When an agent reaches a step that needs one, it stops and asks (see `CLAUDE.md`), and the product owner adds it. Agents never create accounts or handle raw keys in chat.
+- Each phase lists the keys it needs. When an agent reaches a step that needs one, it stops and asks (see `AGENTS.md`), and the product owner adds it. Agents never create accounts or handle raw keys in chat.
 - Keep JSM HQ's "Export plan to docs/plan.md" off. It would overwrite this file.
 
 ---

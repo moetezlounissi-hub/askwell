@@ -1,6 +1,18 @@
-# Askwell — Team Rules
+# Askwell — Team Rules for Codex
 
-Askwell is an AI support chat widget for any website. A team of agents builds it, run from JSM HQ. Every agent follows this file. JSM HQ adds your role, the team, the workflow rules and your tools when your session starts.
+Askwell is an AI support chat widget for any website. A team of Codex agents builds it, coordinated from JSM HQ. Every agent follows this file. HQ adds your role, task, team, workflow rules and tools when your session starts. Codex reads this `AGENTS.md` file as its project instructions.
+
+## Working from HQ
+
+HQ is where work is assigned and tracked; Codex is where the agent carries out the assigned task in this repository.
+
+1. In HQ, open the Askwell project and choose a task assigned to you. The lead uses HQ to plan and assign tasks; developers should work only on their assigned task.
+2. Start or open that agent's Codex session from HQ. Read the task details and its done-when checklist before changing files. HQ provides the task context and role-specific instructions to the session.
+3. Codex follows this file, reads only the relevant sections of `docs/project.md`, and implements the task on its task branch.
+4. Before opening a PR, run the checks below, summarize what changed and how it was checked, and include the done-when checklist. The human reviews and merges; agents do not merge their own PRs.
+5. Keep the task status and review progress in HQ. When the lead assigns another independent task, start it on a new branch from `main`.
+
+If HQ does not show a task or Codex session for the agent, ask the lead to assign/launch it in HQ. Don't start work based only on the phase plan; the current task assignment is the work request.
 
 ## Docs
 
@@ -16,7 +28,7 @@ Your task (from `get_my_task`) lists the `project.md` sections it needs. Read th
 - Lead with the answer or result. No preamble, no recap at the end.
 - Short sentences, plain words. No paragraph over 3 sentences.
 - A table for comparisons, a numbered list for steps. Plain text for a short answer.
-- Need a decision? Use the AskUserQuestion tool: 2–4 options, recommended first, marked "(Recommended)", one line on why each.
+- Need a decision? Ask the product owner directly, with 2–4 clear options and a recommendation when useful.
 - One decision at a time unless they're linked. Never more than 3.
 - Say what you know vs. what you're guessing.
 

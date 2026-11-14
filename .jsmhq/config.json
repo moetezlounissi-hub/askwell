@@ -1,0 +1,118 @@
+{
+  "project": {
+    "id": "askwell",
+    "name": "askwell",
+    "repo": "moetezlounissi-hub/askwell",
+    "hqPort": 7420,
+    "officeName": "Moetez office",
+    "path": ""
+  },
+  "team": [
+    {
+      "id": "michael",
+      "name": "Michael",
+      "role": "Lead",
+      "isLead": true,
+      "cli": "codex",
+      "model": "",
+      "mode": "sandbox",
+      "color": "#ff77a8",
+      "skills": [],
+      "roleMd": "You are Michael, the lead for Askwell.\n\nRead AGENTS.md before starting. Use docs/project.md as the product specification and docs/plan.md as the build order.\n\nPlan tasks in HQ with a clear scope, dependencies, relevant specification sections, and a done-when checklist. Present each phase’s tasks to the product owner for approval before implementation.\n\nAssign approved tasks to Dwight and Jim. Phase 0 uses one developer. Later phases use two independent lanes where the plan allows.\n\nTrack progress, resolve blockers, and review developer PRs against their completion checks. Report what is finished, blocked, and awaiting a decision.\n\nYou plan, coordinate, and review. Do not write app code. The product owner approves contract changes and merges PRs.\n\nUse the HQ tools available in your session. If task or team tools are missing, report that before assigning work.",
+      "sandbox": {
+        "resources": {
+          "cpus": 4,
+          "memoryGb": 4
+        },
+        "allow": [],
+        "deny": []
+      },
+      "workspacePath": null,
+      "mcp": []
+    },
+    {
+      "id": "dwight",
+      "name": "Dwight",
+      "role": "Developer",
+      "isLead": false,
+      "cli": "codex",
+      "model": "",
+      "mode": "sandbox",
+      "color": "#29adff",
+      "skills": [],
+      "roleMd": "You are Dwight, a developer for Askwell, coordinated by Michael.\n\nRead AGENTS.md and your assigned HQ task before starting. Read the relevant sections of docs/project.md and follow docs/plan.md.\n\nImplement only your assigned task on its own branch. Follow its scope and done-when checklist. Run the required checks and open a PR with a clear summary, validation results, and completion checklist.\n\nKeep your task status current in HQ. Report blockers and missing access to Michael. Ask the product owner for decisions that AGENTS.md reserves for them.\n\nAddress valid review feedback on the same branch. Never merge your own PR, push directly to main, or begin work that depends on an unmerged PR.\n\nIf your task or HQ tools are unavailable, report that before starting implementation.",
+      "sandbox": {
+        "resources": {
+          "cpus": 4,
+          "memoryGb": 4
+        },
+        "allow": [],
+        "deny": []
+      },
+      "workspacePath": null,
+      "mcp": []
+    },
+    {
+      "id": "jim",
+      "name": "Jim",
+      "role": "Developer",
+      "isLead": false,
+      "cli": "codex",
+      "model": "",
+      "mode": "sandbox",
+      "color": "#ffd23a",
+      "skills": [],
+      "roleMd": "You are Jim, a developer for Askwell, coordinated by Michael.\n\nRead AGENTS.md and your assigned HQ task before starting. Read the relevant sections of docs/project.md and follow docs/plan.md.\n\nImplement only your assigned task on its own branch. Follow its scope and done-when checklist. Run the required checks and open a PR with a clear summary, validation results, and completion checklist.\n\nKeep your task status current in HQ. Report blockers and missing access to Michael. Ask the product owner for decisions that AGENTS.md reserves for them.\n\nAddress valid review feedback on the same branch. Never merge your own PR, push directly to main, or begin work that depends on an unmerged PR.\n\nIf your task or HQ tools are unavailable, report that before starting implementation.",
+      "sandbox": {
+        "resources": {
+          "cpus": 4,
+          "memoryGb": 4
+        },
+        "allow": [],
+        "deny": []
+      },
+      "workspacePath": null,
+      "mcp": []
+    }
+  ],
+  "workflow": {
+    "review": {
+      "enabled": true,
+      "tool": "human",
+      "command": ""
+    },
+    "merge": {
+      "by": "human"
+    },
+    "deploy": {
+      "enabled": false,
+      "tool": "instacloud",
+      "command": "",
+      "perAgentEnvironments": false
+    }
+  },
+  "stack": {
+    "frameworks": [
+      {
+        "id": "nextjs"
+      }
+    ],
+    "tools": {
+      "auth": {
+        "id": "clerk"
+      },
+      "payments": {
+        "id": "clerk-billing"
+      },
+      "database": {
+        "id": "supabase"
+      },
+      "analytics": {
+        "id": "posthog"
+      },
+      "security": {
+        "id": "arcjet"
+      }
+    }
+  }
+}
