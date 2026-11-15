@@ -1,0 +1,22 @@
+{
+  "name": "askwell",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @askwell/web dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run --passWithNoTests",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.6",
+    "vitest": "^4.0.0"
+  },
+  "type": "module"
+}
