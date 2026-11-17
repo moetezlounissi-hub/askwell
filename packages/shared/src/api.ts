@@ -1,3 +1,5 @@
+import type { z } from "zod";
+import type * as schemas from "./schemas";
 import type { WidgetConfig } from "./widget";
 
 /** Wire timestamps use ISO strings; resource IDs use UUID strings. */
@@ -68,11 +70,30 @@ export interface ConversationThreadResponse {
   messages: Message[];
 }
 export interface UpdateWidgetConfigResponse { config: WidgetConfig }
-export type PosthogConfigRequest = void;
+
 export interface PosthogConfigResponse { key: string; host: string }
 /**
  * Pass raw signed bytes untouched to Clerk's verifier before parsing JSON.
- * No shared JSON schema or normalized billing event is defined here.
+ * Do not parse or re-encode JSON before signature verification.
+ * VerifiedBillingEvent is internal and never substitutes for verification.
  */
 export type ClerkWebhookRequest = Uint8Array;
 export interface ClerkWebhookResponse { received: true }
+
+export type WidgetConfigRequest = z.infer<typeof schemas.WidgetConfigRequestSchema>;
+export type WidgetChatRequest = z.infer<typeof schemas.WidgetChatRequestSchema>;
+export type ListProjectsRequest = z.infer<typeof schemas.ListProjectsRequestSchema>;
+export type CreateProjectRequest = z.infer<typeof schemas.CreateProjectRequestSchema>;
+export type UpdateProjectRequest = z.infer<typeof schemas.UpdateProjectRequestSchema>;
+export type DeleteProjectRequest = z.infer<typeof schemas.DeleteProjectRequestSchema>;
+export type CreateKnowledgeRequest = z.infer<typeof schemas.CreateKnowledgeRequestSchema>;
+export type KnowledgeUploadUrlRequest = z.infer<typeof schemas.KnowledgeUploadUrlRequestSchema>;
+export type FinalizeKnowledgeRequest = z.infer<typeof schemas.FinalizeKnowledgeRequestSchema>;
+export type DeleteKnowledgeRequest = z.infer<typeof schemas.DeleteKnowledgeRequestSchema>;
+export type ListConversationsRequest = z.infer<typeof schemas.ListConversationsRequestSchema>;
+export type ConversationThreadRequest = z.infer<typeof schemas.ConversationThreadRequestSchema>;
+export type UpdateWidgetConfigRequest = z.infer<typeof schemas.UpdateWidgetConfigRequestSchema>;
+export type PosthogConfigRequest = z.infer<typeof schemas.PosthogConfigRequestSchema>;
+export type VerifiedBillingEvent = z.infer<typeof schemas.VerifiedBillingEventSchema>;
+export type AbsentBody = undefined;
+export type AbsentParams = undefined;
