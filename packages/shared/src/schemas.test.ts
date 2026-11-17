@@ -107,3 +107,20 @@ it("accepts only verified active/ended representations without inferring transit
     expect(s.VerifiedBillingEventSchema.safeParse(partial).success).toBe(false);
   }
 });
+
+it("rejects unknown and missing fields across chat, upload and finalize bodies", () => {
+  const bodies = [
+    [s.WidgetChatBodySchema, chat],
+    [s.KnowledgeUploadUrlBodySchema, file],
+    [s.FinalizeKnowledgeBodySchema, { sourceId: id }],
+  ] as const;
+  for (const [schema, body] of bodies) {
+    expect(schema.safeParse({ ...body, unexpected: true }).success).toBe(false);
+    for (const key of Object.keys(body)) {
+      const missing: Record<string, unknown> = { ...body };
+      delete missing[key];
+      expect(schema.safeParse(missing).success).toBe(false);
+      expect(schema.safeParse({ ...body, [key]: null }).success).toBe(false);
+    }
+  }
+});
