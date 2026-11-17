@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <p>A home for your knowledge and conversations.</p>
           </div>
         </aside>
-        <main id="dashboard-main" className="dashboard-main">
+        <main id="dashboard-main" className="dashboard-main" tabIndex={-1}>
           {children}
         </main>
       </div>

@@ -47,7 +47,7 @@ export default function Home() {
           </Link>
         </nav>
       </header>
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <section className="hero wrap" aria-labelledby="hero-title">
           <div className="hero-copy">
             <p className="eyebrow">
