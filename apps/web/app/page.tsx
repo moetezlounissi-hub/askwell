@@ -37,7 +37,7 @@ export default function Home() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <header className="site-header wrap">
+      <header id="top" className="site-header wrap" tabIndex={-1}>
         <Brand />
         <nav aria-label="Main navigation">
           <a href="#how-it-works">How it works</a>
@@ -220,7 +220,7 @@ export default function Home() {
       <footer className="site-footer wrap">
         <Brand />
         <p>Helpful answers start with what you know.</p>
-        <a href="#main">Back to top ↑</a>
+        <a href="#top">Back to top ↑</a>
       </footer>
     </div>
   );
