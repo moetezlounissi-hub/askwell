@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { APP_NAME } from "@askwell/shared";
+import { APP_NAME, PLAN_LIMITS } from "@askwell/shared";
 import { Brand } from "../components/brand";
 
 const steps = [
@@ -19,10 +19,12 @@ const steps = [
     "Add a script tag to your website. Help is a conversation away.",
   ],
 ];
+const { free, pro } = PLAN_LIMITS;
+const formatLimit = new Intl.NumberFormat("en-US").format;
 const comparison = [
-  ["Projects", "1", "5"],
-  ["Messages / month, per project", "100", "2,000"],
-  ["Knowledge sources / project", "3", "25"],
+  ["Projects", free.projects, pro.projects],
+  ["Messages / month, per project", formatLimit(free.messagesPerMonth), formatLimit(pro.messagesPerMonth)],
+  ["Knowledge sources / project", free.knowledgeSources, pro.knowledgeSources],
   ["Button color", "Default", "Any"],
   ["Button position", "Bottom right", "Any corner"],
   ["Button label", "Default", "Custom"],
