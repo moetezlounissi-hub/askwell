@@ -10,7 +10,8 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run --passWithNoTests",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "db:types:local": "node --experimental-strip-types packages/db/generate-types.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
