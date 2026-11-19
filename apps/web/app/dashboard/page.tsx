@@ -1,6 +1,8 @@
-import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { APP_NAME } from "@askwell/shared";
+import { bootstrapAccount } from "../../lib/auth/bootstrap-account";
+import { createOwnerClient } from "../../lib/supabase/owner";
+import { createServiceClient } from "../../lib/supabase/service";
 
 export const metadata: Metadata = {
   title: `Projects · ${APP_NAME}`,
@@ -8,7 +10,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Dashboard() {
-  await auth.protect();
+  await bootstrapAccount(createServiceClient);
+
+  const { data: account, error } = await createOwnerClient()
+    .from("accounts")
+    .select("plan")
+    .single();
+
+  if (error) {
+    throw new Error("Could not load the workspace account.", { cause: error });
+  }
 
   return (
     <>
@@ -17,7 +28,7 @@ export default async function Dashboard() {
           <p className="eyebrow">YOUR WORKSPACE</p>
           <h1>Projects</h1>
         </div>
-        <span className="pill">Getting started</span>
+        <span className="pill">{account.plan === "pro" ? "Pro" : "Free"} plan</span>
       </div>
       <section className="empty-state glass" aria-labelledby="empty-title">
         <span className="empty-icon" aria-hidden="true">
