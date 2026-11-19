@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18"
+  }
   public: {
     Tables: {
       accounts: {
@@ -15,7 +20,6 @@ export type Database = {
           created_at: string
           plan: string
         }
-        ComputedFields: never
         Insert: {
           clerk_user_id: string
           created_at?: string
@@ -35,7 +39,6 @@ export type Database = {
           project_id: string
           visitor_id: string
         }
-        ComputedFields: never
         Insert: {
           created_at?: string
           id?: string
@@ -66,7 +69,6 @@ export type Database = {
           project_id: string
           source_id: string
         }
-        ComputedFields: never
         Insert: {
           content: string
           embedding: string
@@ -101,7 +103,6 @@ export type Database = {
           title: string
           type: string
         }
-        ComputedFields: never
         Insert: {
           created_at?: string
           id?: string
@@ -138,7 +139,6 @@ export type Database = {
           id: string
           role: string
         }
-        ComputedFields: never
         Insert: {
           body: string
           conversation_id: string
@@ -173,7 +173,6 @@ export type Database = {
           period_start: string
           public_key: string
         }
-        ComputedFields: never
         Insert: {
           created_at?: string
           id?: string
@@ -212,7 +211,6 @@ export type Database = {
           project_id: string
           show_badge: boolean
         }
-        ComputedFields: never
         Insert: {
           animation?: string
           button_color?: string
@@ -246,7 +244,74 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consume_message: {
+        Args: {
+          p_conversation_id?: string
+          p_message_limit: number
+          p_project_id: string
+        }
+        Returns: number
+      }
+      create_project: {
+        Args: { p_name: string; p_owner_id: string; p_project_limit: number }
+        Returns: {
+          created_at: string
+          id: string
+          messages_used: number
+          name: string
+          owner_id: string
+          period_start: string
+          public_key: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "projects"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      match_chunks: {
+        Args: { p_embedding: string; p_project_id: string }
+        Returns: {
+          content: string
+          distance: number
+          id: string
+          source_id: string
+        }[]
+      }
+      owner_activity: {
+        Args: never
+        Returns: {
+          conversations: number
+          knowledge_sources: number
+          messages_this_month: number
+          projects: number
+        }[]
+      }
+      reserve_knowledge_source: {
+        Args: {
+          p_owner_id: string
+          p_project_id: string
+          p_source_limit: number
+          p_storage_key?: string
+          p_title: string
+          p_type: string
+        }
+        Returns: {
+          reclaimed_storage_keys: string[]
+          source_id: string
+        }[]
+      }
+      save_chat_turn: {
+        Args: {
+          p_conversation_id?: string
+          p_message: string
+          p_project_id: string
+          p_reply: string
+          p_visitor_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
