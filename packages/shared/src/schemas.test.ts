@@ -82,6 +82,13 @@ it("validates file basename, exact MIME pairing and integer byte limits", () => 
 
 it("requires complete config and validates enums, colors, trimmed copy and booleans", () => {
   expect(s.UpdateWidgetConfigBodySchema.parse({ ...DEFAULT_WIDGET_CONFIG, label: " Ask " }).label).toBe("Ask");
+  expect(
+    s.UpdateWidgetConfigBodySchema.parse({
+      ...DEFAULT_WIDGET_CONFIG,
+      buttonColor: "#aBcD09",
+      showBadge: false,
+    }),
+  ).toMatchObject({ buttonColor: "#aBcD09", showBadge: false });
   for (const position of ["bottom-right", "bottom-left", "top-right", "top-left"]) expect(s.UpdateWidgetConfigBodySchema.safeParse({ ...DEFAULT_WIDGET_CONFIG, position }).success).toBe(true);
   for (const animation of ["fade", "slide", "scale"]) expect(s.UpdateWidgetConfigBodySchema.safeParse({ ...DEFAULT_WIDGET_CONFIG, animation }).success).toBe(true);
   for (const [key, max] of [["label", 80], ["headerText", 120]] as const) {
