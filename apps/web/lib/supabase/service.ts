@@ -2,12 +2,13 @@ import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@askwell/db";
+import { getSupabaseUrl } from "./url";
 
 export function createServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = getSupabaseUrl();
   const secretKey = process.env.SUPABASE_SECRET_KEY;
-  if (!url || !secretKey) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY are required.");
+  if (!secretKey) {
+    throw new Error("SUPABASE_SECRET_KEY is required.");
   }
 
   return createClient<Database>(url, secretKey, {

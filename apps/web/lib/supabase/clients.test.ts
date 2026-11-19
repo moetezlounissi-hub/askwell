@@ -40,6 +40,17 @@ function requestHeaders(index = 0) {
 }
 
 describe("Supabase clients", () => {
+  it.each(["http://example.supabase.co", "http://localhost:54321", "invalid", undefined])(
+    "rejects unconfigured or insecure endpoints (%s) before obtaining credentials",
+    (endpoint) => {
+      vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", endpoint);
+      expect(createOwnerClient).toThrow("NEXT_PUBLIC_SUPABASE_URL must be an HTTPS URL.");
+      expect(createServiceClient).toThrow("NEXT_PUBLIC_SUPABASE_URL must be an HTTPS URL.");
+      expect(clerkAuth).not.toHaveBeenCalled();
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+
   it("forwards each request's Clerk session token through accessToken", async () => {
     const firstToken = vi.fn().mockResolvedValue("owner-session-one");
     const secondToken = vi.fn().mockResolvedValue("owner-session-two");
