@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { APP_NAME } from "@askwell/shared";
 
@@ -6,7 +7,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  await auth.protect();
+
   return (
     <>
       <div className="dashboard-title">
@@ -16,10 +19,6 @@ export default function Dashboard() {
         </div>
         <span className="pill">Getting started</span>
       </div>
-      <p className="workspace-notice">
-        This is a static workspace preview. Sign-in and project management are
-        coming next; no account data is shown.
-      </p>
       <section className="empty-state glass" aria-labelledby="empty-title">
         <span className="empty-icon" aria-hidden="true">
           ＋

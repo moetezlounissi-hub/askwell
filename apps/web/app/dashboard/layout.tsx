@@ -1,3 +1,4 @@
+import { UserButton } from "@clerk/nextjs";
 import type { ReactNode } from "react";
 import { Brand } from "../../components/brand";
 
@@ -9,7 +10,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </a>
       <header className="dashboard-header">
         <Brand />
-        <span className="pill">WORKSPACE PREVIEW</span>
+        <UserButton />
       </header>
       <div className="dashboard-grid">
         <aside className="sidebar">
