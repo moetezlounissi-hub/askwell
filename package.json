@@ -11,7 +11,8 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run --passWithNoTests",
     "build": "pnpm -r build",
-    "db:types:local": "node --experimental-strip-types packages/db/generate-types.ts"
+    "db:types:local": "node --experimental-strip-types packages/db/generate-types.ts",
+    "db:types": "node --experimental-strip-types packages/db/generate-hosted-types.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

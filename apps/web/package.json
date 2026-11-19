@@ -9,11 +9,14 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@askwell/db": "workspace:*",
     "@askwell/shared": "workspace:*",
     "@clerk/nextjs": "^7.10.4",
+    "@supabase/supabase-js": "2.119.2",
     "next": "16.4.6",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
