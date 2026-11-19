@@ -64,8 +64,8 @@ it("preserves nonblank messages/text and measures UTF-16 length", () => {
   for (const message of ["", " \n", "a".repeat(1001), "😀".repeat(501), null]) expect(s.WidgetChatBodySchema.safeParse({ ...chat, message }).success).toBe(false);
   expect(s.WidgetChatBodySchema.safeParse({ ...chat, conversationId: id }).success).toBe(true);
   for (const conversationId of [null, "bad"]) expect(s.WidgetChatBodySchema.safeParse({ ...chat, conversationId }).success).toBe(false);
-  for (const text of ["a", "a".repeat(1_000_000)]) expect(s.CreateKnowledgeBodySchema.safeParse({ title: "T", text }).success).toBe(true);
-  for (const text of ["", " \n", "a".repeat(1_000_001), null]) expect(s.CreateKnowledgeBodySchema.safeParse({ title: "T", text }).success).toBe(false);
+  for (const text of ["a", "a".repeat(1_000_000), "😀".repeat(500_000)]) expect(s.CreateKnowledgeBodySchema.safeParse({ title: "T", text }).success).toBe(true);
+  for (const text of ["", " \n", "a".repeat(1_000_001), "😀".repeat(500_000) + "a", null]) expect(s.CreateKnowledgeBodySchema.safeParse({ title: "T", text }).success).toBe(false);
 });
 
 it("validates file basename, exact MIME pairing and integer byte limits", () => {
