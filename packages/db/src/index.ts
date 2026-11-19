@@ -1,2 +1,1 @@
-// Database types and helpers arrive in Phase 1.
-export {};
+export type { Database, Enums, Json, Tables, TablesInsert, TablesUpdate } from "../types";
