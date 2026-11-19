@@ -1,5 +1,5 @@
 import { unstable_doesMiddlewareMatch } from "next/experimental/testing/server";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { describe, expect, it, vi } from "vitest";
 import { config } from "../../proxy";
 import { protectRequest } from "./protect-request";
@@ -7,12 +7,10 @@ import { protectRequest } from "./protect-request";
 const origin = "https://askwell.example";
 
 function mockAuth(isAuthenticated: boolean) {
-  const protect = vi.fn();
-  if (!isAuthenticated) {
-    protect.mockRejectedValue(new Error("Clerk sign-in redirect"));
-  }
-
-  return Object.assign(vi.fn().mockResolvedValue({ isAuthenticated }), { protect });
+  return vi.fn().mockResolvedValue({
+    isAuthenticated,
+    redirectToSignIn: () => NextResponse.redirect(origin + "/sign-in"),
+  });
 }
 
 describe("Clerk proxy", () => {
@@ -26,12 +24,11 @@ describe("Clerk proxy", () => {
     (url) => expect(unstable_doesMiddlewareMatch({ config, url })).toBe(false),
   );
 
-  it("delegates signed-out dashboard redirects to Clerk", async () => {
-    const auth = mockAuth(false);
+  it("redirects signed-out dashboard requests to sign-in", async () => {
+    const response = await protectRequest(mockAuth(false), new NextRequest(origin + "/dashboard"));
 
-    await expect(protectRequest(auth, new NextRequest(origin + "/dashboard")))
-      .rejects.toThrow("Clerk sign-in redirect");
-    expect(auth.protect).toHaveBeenCalledOnce();
+    expect(response?.status).toBe(307);
+    expect(response?.headers.get("location")).toBe(origin + "/sign-in");
   });
 
   it("returns a JSON 401 for an unauthenticated owner API request", async () => {
