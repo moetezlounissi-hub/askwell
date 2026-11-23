@@ -40,10 +40,12 @@ export async function DELETE(request: Request, { params }: ProjectContext) {
   if (!(await auth()).isAuthenticated) {
     return projectError(401, "unauthenticated", "Sign in to continue.");
   }
+  // A deployment adapter can expose an empty DELETE body as a stream.
+  const body = await request.text().catch(() => null);
   const input = DeleteProjectRequestSchema.safeParse({
     params: await params,
     query: Object.fromEntries(new URL(request.url).searchParams),
-    body: request.body === null ? undefined : null,
+    body: body === "" ? undefined : body,
   });
   if (!input.success) return projectError(400, "validation_error", "Invalid project deletion request.");
 

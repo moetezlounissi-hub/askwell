@@ -135,14 +135,22 @@ it("updates only the project name through the owner client", async () => {
   expect(update).toHaveBeenCalledExactlyOnceWith({ name });
 });
 
-it("deletes an owned project and returns an empty 204 response", async () => {
+it.each([undefined, ""])("deletes an owned project with an empty body (%s)", async (body) => {
   maybeSingle.mockResolvedValue({ data: { id: row.id }, error: null });
 
-  const response = await DELETE(request("DELETE", `/${row.id}`), context);
+  const response = await DELETE(new Request(`${url}/${row.id}`, { method: "DELETE", body }), context);
 
   expect(response.status).toBe(204);
   expect(await response.text()).toBe("");
   expect(getOwnedProject).toHaveBeenCalledBefore(remove);
+});
+
+it("rejects a delete with a nonempty body before checking ownership", async () => {
+  const response = await DELETE(request("DELETE", `/${row.id}`, {}), context);
+
+  expect(response.status).toBe(400);
+  expect(getOwnedProject).not.toHaveBeenCalled();
+  expect(remove).not.toHaveBeenCalled();
 });
 
 it("returns the same ownership error for missing or foreign projects without writing", async () => {
