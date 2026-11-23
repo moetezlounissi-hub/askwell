@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
-    "build": "next build",
+    "dev": "pnpm --filter @askwell/widget bundle && next dev --hostname 0.0.0.0",
+    "build": "pnpm --filter @askwell/widget bundle && next build",
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "next typegen && tsc --noEmit"
   },
@@ -19,6 +19,7 @@
     "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@askwell/widget": "workspace:*",
     "@tailwindcss/postcss": "^4.1.0",
     "tailwindcss": "^4.1.0",
     "@types/node": "^22.0.0",

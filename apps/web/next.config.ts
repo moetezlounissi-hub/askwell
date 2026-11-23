@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@askwell/shared"],
+  async rewrites() {
+    return [{ source: "/widget.js", destination: "/dist/widget.js" }];
+  },
   async headers() {
     return [
       {

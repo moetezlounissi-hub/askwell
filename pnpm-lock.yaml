@@ -48,6 +48,9 @@ importers:
         specifier: 0.0.1
         version: 0.0.1
     devDependencies:
+      '@askwell/widget':
+        specifier: workspace:*
+        version: link:../widget
       '@tailwindcss/postcss':
         specifier: ^4.1.0
         version: 4.3.5
@@ -64,7 +67,15 @@ importers:
         specifier: ^4.1.0
         version: 4.3.5
 
-  apps/widget: {}
+  apps/widget:
+    dependencies:
+      '@askwell/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+    devDependencies:
+      rolldown:
+        specifier: 1.2.19
+        version: 1.2.19
 
   packages/db:
     devDependencies:
