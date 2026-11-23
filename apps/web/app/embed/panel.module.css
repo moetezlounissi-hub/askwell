@@ -1,0 +1,129 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: radial-gradient(ellipse at top left, #272827, var(--canvas) 70%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+}
+
+.header,
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--panel);
+  backdrop-filter: blur(var(--blur));
+}
+
+.header {
+  justify-content: space-between;
+  min-height: 3.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.header h1 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.header button,
+.composer button {
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.header button {
+  min-width: 2.75rem;
+  color: inherit;
+  border: 1px solid var(--line);
+  font-size: 1.25rem;
+}
+
+.messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.625rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1rem;
+}
+
+.visitor,
+.reply {
+  max-width: 88%;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.875rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: 0.875rem;
+}
+
+.visitor {
+  align-self: flex-end;
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+.reply {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.empty,
+.typing,
+.badge {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.composer {
+  border-top: 1px solid var(--line);
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--canvas);
+  color: inherit;
+  font-size: 1rem;
+}
+
+.composer button {
+  padding-inline: 0.875rem;
+  background: var(--ink);
+  color: var(--canvas);
+  font-weight: 600;
+}
+
+.composer button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.badge {
+  padding: 0 1rem 0.5rem;
+  background: var(--panel);
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
