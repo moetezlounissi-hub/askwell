@@ -20,6 +20,7 @@ const { protect, createServiceClient, createOwnerClient, upsert, single } =
   });
 
 vi.mock("server-only", () => ({}));
+vi.mock("../../lib/projects/owner-projects", () => ({ listOwnerProjects: vi.fn(async () => []) }));
 vi.mock("@clerk/nextjs/server", () => ({ auth: { protect } }));
 vi.mock("../../lib/supabase/service", () => ({ createServiceClient }));
 vi.mock("../../lib/supabase/owner", () => ({ createOwnerClient }));
