@@ -8,6 +8,25 @@ import { createOwnerClient } from "../../../../lib/supabase/owner";
 
 type ProjectContext = { params: Promise<{ id: string }> };
 
+async function isEmptyBody(body: Request["body"]): Promise<boolean> {
+  if (body === null) return true;
+
+  const reader = body.getReader();
+  try {
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) return true;
+      if (chunk.value.byteLength > 0) {
+        // Cancellation can take longer than the validation response.
+        void reader.cancel().catch(() => {});
+        return false;
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export async function PATCH(request: Request, { params }: ProjectContext) {
   if (!(await auth()).isAuthenticated) {
     return projectError(401, "unauthenticated", "Sign in to continue.");
@@ -41,11 +60,11 @@ export async function DELETE(request: Request, { params }: ProjectContext) {
     return projectError(401, "unauthenticated", "Sign in to continue.");
   }
   // A deployment adapter can expose an empty DELETE body as a stream.
-  const body = await request.text().catch(() => null);
+  const emptyBody = await isEmptyBody(request.body).catch(() => false);
   const input = DeleteProjectRequestSchema.safeParse({
     params: await params,
     query: Object.fromEntries(new URL(request.url).searchParams),
-    body: body === "" ? undefined : body,
+    body: emptyBody ? undefined : null,
   });
   if (!input.success) return projectError(400, "validation_error", "Invalid project deletion request.");
 
