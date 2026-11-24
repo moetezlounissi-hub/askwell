@@ -1,6 +1,7 @@
 "use client";
 
 import type { ApiError, CreateProjectResponse, Project, UpdateProjectResponse } from "@askwell/shared";
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
 type Operation = "create" | "rename" | "delete";
@@ -110,6 +111,9 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
                 </>
               ) : (
                 <div className="flex flex-wrap gap-4">
+                  <Link className="underline" href={`/dashboard/projects/${project.id}/install`} aria-label={`Install widget for ${project.name}`}>
+                    Install
+                  </Link>
                   <button className="underline disabled:opacity-50" aria-label={`Rename ${project.name}`} disabled={pending !== null} onClick={() => { setDeleting(null); setEditing(project.id); }}>Rename</button>
                   <button className="underline disabled:opacity-50" aria-label={`Delete ${project.name}`} disabled={pending !== null} onClick={() => { setEditing(null); setDeleting(project.id); }}>Delete</button>
                 </div>
