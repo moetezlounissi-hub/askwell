@@ -5,6 +5,7 @@ import {
   type WidgetConfigResponse,
 } from "@askwell/shared";
 import { NextResponse } from "next/server";
+import { protectWidgetConfig } from "../../../../lib/arcjet";
 import { lookupWidgetConfig } from "../../../../lib/widget/config/lookup";
 
 const headers = {
@@ -32,8 +33,20 @@ export async function GET(request: Request) {
     return configError(400, "validation_error", "Provide a valid widget key.");
   }
 
+  const { key } = input.data.query;
   try {
-    const config = await lookupWidgetConfig(input.data.query.key);
+    const decision = await protectWidgetConfig(request, key);
+    if (decision.isErrored()) {
+      console.warn("Arcjet could not check the widget config rate limit.");
+    } else if (decision.isDenied() && decision.reason.isRateLimit()) {
+      return configError(429, "rate_limited", "Too many requests. Try again later.");
+    }
+  } catch {
+    console.warn("Arcjet could not check the widget config rate limit.");
+  }
+
+  try {
+    const config = await lookupWidgetConfig(key);
     if (!config) return configError(404, "not_found", "Widget not found.");
     return NextResponse.json<WidgetConfigResponse>(config, { headers });
   } catch {
