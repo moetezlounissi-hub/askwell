@@ -7,10 +7,10 @@ import {
 } from "@askwell/shared";
 import { createServiceClient } from "../../supabase/service";
 
-export async function lookupWidgetConfig(publicKey: string): Promise<WidgetConfigResponse | null> {
-  const { data, error } = await createServiceClient()
+export async function resolveWidgetProject(db: ReturnType<typeof createServiceClient>, publicKey: string) {
+  const { data, error } = await db
     .from("projects")
-    .select("accounts(plan), widget_configs(button_color, position, label, animation, header_text, show_badge)")
+    .select("id, accounts(plan), widget_configs(button_color, position, label, animation, header_text, show_badge)")
     .eq("public_key", publicKey)
     .maybeSingle();
 
@@ -18,10 +18,17 @@ export async function lookupWidgetConfig(publicKey: string): Promise<WidgetConfi
   if (!data) return null;
 
   const plan = data.accounts?.plan;
-  if (plan === "free") return DEFAULT_WIDGET_CONFIG;
+  if (plan !== "free" && plan !== "pro") throw new Error("Widget configuration is incomplete.");
+  return { id: data.id, plan, config: data.widget_configs } as const;
+}
 
-  const config = data.widget_configs;
-  if (plan !== "pro" || !config) throw new Error("Widget configuration is incomplete.");
+export async function lookupWidgetConfig(publicKey: string): Promise<WidgetConfigResponse | null> {
+  const project = await resolveWidgetProject(createServiceClient(), publicKey);
+  if (!project) return null;
+  if (project.plan === "free") return DEFAULT_WIDGET_CONFIG;
+
+  const { config } = project;
+  if (!config) throw new Error("Widget configuration is incomplete.");
 
   return UpdateWidgetConfigBodySchema.parse({
     buttonColor: config.button_color,

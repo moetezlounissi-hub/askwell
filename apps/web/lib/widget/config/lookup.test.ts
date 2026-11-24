@@ -1,6 +1,7 @@
 import { DEFAULT_WIDGET_CONFIG } from "@askwell/shared";
 import { beforeEach, expect, it, vi } from "vitest";
-import { lookupWidgetConfig } from "./lookup";
+import { createServiceClient } from "../../supabase/service";
+import { lookupWidgetConfig, resolveWidgetProject } from "./lookup";
 
 const { from, select, eq, maybeSingle } = vi.hoisted(() => ({
   from: vi.fn(),
@@ -42,7 +43,7 @@ it("uses the shared Free defaults and badge even if custom values were stored", 
 
 it("returns only the six public Pro fields", async () => {
   maybeSingle.mockResolvedValue({
-    data: { accounts: { plan: "pro" }, widget_configs: widgetConfig },
+    data: { id: "private-project-id", accounts: { plan: "pro" }, widget_configs: widgetConfig },
     error: null,
   });
 
@@ -54,6 +55,18 @@ it("returns only the six public Pro fields", async () => {
     headerText: "Support",
     showBadge: false,
   });
+});
+
+it("resolves the internal project ID and current plan by public key", async () => {
+  maybeSingle.mockResolvedValue({
+    data: { id: "private-project-id", accounts: { plan: "pro" }, widget_configs: widgetConfig },
+    error: null,
+  });
+  await expect(resolveWidgetProject(createServiceClient(), "pk_pro")).resolves.toMatchObject({
+    id: "private-project-id",
+    plan: "pro",
+  });
+  expect(eq).toHaveBeenCalledExactlyOnceWith("public_key", "pk_pro");
 });
 
 it("returns null for an unknown project and throws on a database error", async () => {
