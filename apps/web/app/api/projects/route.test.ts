@@ -135,14 +135,44 @@ it("updates only the project name through the owner client", async () => {
   expect(update).toHaveBeenCalledExactlyOnceWith({ name });
 });
 
-it("deletes an owned project and returns an empty 204 response", async () => {
+it.each([undefined, ""])("deletes an owned project with an empty body (%s)", async (body) => {
   maybeSingle.mockResolvedValue({ data: { id: row.id }, error: null });
 
-  const response = await DELETE(request("DELETE", `/${row.id}`), context);
+  const response = await DELETE(new Request(`${url}/${row.id}`, { method: "DELETE", body }), context);
 
   expect(response.status).toBe(204);
   expect(await response.text()).toBe("");
   expect(getOwnedProject).toHaveBeenCalledBefore(remove);
+});
+
+it.each([
+  ["JSON", "{}"],
+  ["UTF-8 BOM", "\uFEFF"],
+])("rejects a delete with a %s body before checking ownership", async (_label, body) => {
+  const response = await DELETE(new Request(`${url}/${row.id}`, { method: "DELETE", body }), context);
+
+  expect(response.status).toBe(400);
+  expect(getOwnedProject).not.toHaveBeenCalled();
+  expect(remove).not.toHaveBeenCalled();
+});
+
+it("rejects a delete without waiting for the stream to close after receiving a byte", async () => {
+  const cancel = vi.fn(() => new Promise<void>(() => {}));
+  const body = new ReadableStream({
+    start(controller) {
+      controller.enqueue(new Uint8Array(0));
+      controller.enqueue(Uint8Array.of(1));
+    },
+    cancel,
+  });
+  const init = { method: "DELETE", body, duplex: "half" };
+
+  const response = await DELETE(new Request(`${url}/${row.id}`, init), context);
+
+  expect(response.status).toBe(400);
+  expect(cancel).toHaveBeenCalledOnce();
+  expect(getOwnedProject).not.toHaveBeenCalled();
+  expect(remove).not.toHaveBeenCalled();
 });
 
 it("returns the same ownership error for missing or foreign projects without writing", async () => {
