@@ -26,13 +26,14 @@ export default async function Dashboard() {
 
   return (
     <>
-      <div className={styles.heading}>
-        <div>
+      <header className={styles.hero}>
+        <div className={styles.heroContent}>
+          <span className={styles.plan}>{account.plan === "pro" ? "Pro" : "Free"} plan</span>
           <h1>Projects</h1>
           <p>Set up a support widget for each website you manage.</p>
         </div>
-        <span className="pill">{account.plan === "pro" ? "Pro" : "Free"} plan</span>
-      </div>
+        <div className={styles.heroArt} aria-hidden="true" />
+      </header>
       <ProjectsPanel initialProjects={projects} />
     </>
   );
