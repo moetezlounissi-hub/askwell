@@ -6,7 +6,7 @@ import styles from "./dashboard.module.css";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="dashboard">
+    <div className={`dashboard ${styles.shell}`}>
       <a className="skip-link" href="#dashboard-main">
         Skip to content
       </a>

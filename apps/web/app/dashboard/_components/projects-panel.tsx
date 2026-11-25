@@ -73,10 +73,10 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
 
   return (
     <div className={styles.workspace}>
-      <section aria-labelledby="project-list-title">
+      <section className={styles.projectList} aria-labelledby="project-list-title">
         <header className={styles.listHeading}>
           <h2 id="project-list-title">Your projects</h2>
-          <span>{projects.length} {projects.length === 1 ? "project" : "projects"}</span>
+          <span className={styles.projectCount}>{projects.length} {projects.length === 1 ? "project" : "projects"}</span>
         </header>
         {feedback && !feedback.error && feedback.operation !== "create" && (
           <p className={styles.feedback} role="status">{feedback.text}</p>
@@ -87,7 +87,7 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
               <ProjectIcon />
             </span>
             <h3>No projects yet</h3>
-            <p>Create a project to get the install code for your first support widget.</p>
+            <p>Create your first project to add knowledge and install your support widget.</p>
           </div>
         ) : (
           <ul className={styles.cards}>
@@ -106,7 +106,7 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
                     <input id={`name-${project.id}`} name="name" defaultValue={project.name} required maxLength={100}
                       className={styles.input} disabled={pending !== null} />
                     <div className="flex flex-wrap gap-3">
-                      <button className="button button-small disabled:opacity-50" disabled={pending !== null}>
+                      <button className={styles.actionButton} disabled={pending !== null}>
                         {pending === "rename" ? "Saving…" : "Save name"}
                       </button>
                       <button type="button" className={styles.textButton} disabled={pending !== null} onClick={() => setEditing(null)}>Cancel</button>
@@ -116,7 +116,7 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
                   <>
                     <p className="mt-4 mb-3">Permanently delete this project and its data?</p>
                     <div className="flex flex-wrap gap-3">
-                      <button className="button button-small disabled:opacity-50" disabled={pending !== null} onClick={() => void mutate("delete", project.id)}>
+                      <button className={styles.actionButton} disabled={pending !== null} onClick={() => void mutate("delete", project.id)}>
                         {pending === "delete" ? "Deleting…" : "Delete project"}
                       </button>
                       <button className={styles.textButton} disabled={pending !== null} onClick={() => setDeleting(null)}>Cancel</button>
@@ -127,7 +127,7 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
                     <Link className={styles.secondaryButton} href={`/dashboard/projects/${project.id}/knowledge`} aria-label={`Manage knowledge for ${project.name}`}>
                       Knowledge
                     </Link>
-                    <Link className={styles.secondaryButton} href={`/dashboard/projects/${project.id}/install`} aria-label={`Install widget for ${project.name}`}>
+                    <Link className={`${styles.secondaryButton} ${styles.installButton}`} href={`/dashboard/projects/${project.id}/install`} aria-label={`Install widget for ${project.name}`}>
                       Install widget <span aria-hidden="true">→</span>
                     </Link>
                     <button className={styles.textButton} aria-label={`Rename ${project.name}`} disabled={pending !== null} onClick={() => { setDeleting(null); setEditing(project.id); }}>Rename</button>
@@ -145,13 +145,13 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
 
       <section className={`glass ${styles.createPanel}`} aria-labelledby="create-project-title">
         <h2 id="create-project-title">Create a project</h2>
-        <p>Give your project a name you’ll recognize.</p>
+        <p>Use your website or business name so you can find the project later.</p>
         <form onSubmit={create}>
           <label htmlFor="new-project-name">Project name</label>
           <input id="new-project-name" name="name" required maxLength={100} pattern={String.raw`.*\S.*`}
             placeholder="e.g. Acme Help Center" aria-describedby="project-name-help" title="Enter a name with at least one non-space character."
             disabled={pending !== null} className={styles.input} />
-          <p id="project-name-help" className={styles.fieldHelp}>Enter up to 100 characters.</p>
+          <p id="project-name-help" className={styles.fieldHelp}>Up to 100 characters.</p>
           <button className={styles.primaryButton} disabled={pending !== null}>
             <span aria-hidden="true">+</span>
             {pending === "create" ? "Creating…" : "Create project"}

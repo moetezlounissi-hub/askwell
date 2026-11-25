@@ -6,7 +6,7 @@
 
 .headerInner,
 .main {
-  width: min(1160px, calc(100% - 48px));
+  width: min(1120px, calc(100% - 48px));
   margin-inline: auto;
 }
 
@@ -20,8 +20,11 @@
 .navLink {
   display: inline-flex;
   align-items: center;
-  min-height: 68px;
-  border-bottom: 2px solid currentColor;
+  min-height: 40px;
+  padding-inline: 14px;
+  border-radius: 9px;
+  background: var(--surface-blue);
+  color: var(--accent);
   font-size: 0.875rem;
   font-weight: 650;
 }
@@ -33,7 +36,7 @@
 }
 
 .main {
-  padding-block: clamp(36px, 7vw, 88px) 64px;
+  padding-block: clamp(26px, 5vw, 62px) 64px;
 }
 
 .heading,
@@ -66,10 +69,10 @@
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 345px);
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 360px);
   align-items: start;
-  gap: clamp(24px, 4vw, 44px);
-  margin-top: 30px;
+  gap: clamp(20px, 3vw, 36px);
+  margin-top: clamp(26px, 4vw, 42px);
 }
 
 .listHeading {
@@ -99,13 +102,14 @@
   height: 44px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--canvas);
+  background: var(--surface-blue);
 }
 
 .empty,
 .card,
 .createPanel {
-  box-shadow: 0 12px 32px rgb(0 0 0 / 4%);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
 }
 
 .empty {
@@ -142,7 +146,7 @@
   flex-wrap: wrap;
 }
 
-.cardActions > a {
+.cardActions .installButton {
   margin-inline-end: auto;
 }
 
@@ -160,16 +164,14 @@
   width: 100%;
   margin-block: 7px 5px;
   padding: 11px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid #788daa;
   border-radius: 10px;
-  border-color: color-mix(in srgb, var(--ink) 55%, white);
   background: white;
   color: var(--ink);
 }
 
-.input:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+.input::placeholder {
+  color: var(--muted);
 }
 
 .createPanel .fieldHelp {
@@ -177,6 +179,7 @@
 }
 
 .primaryButton,
+.actionButton,
 .secondaryButton,
 .textButton {
   display: inline-flex;
@@ -187,18 +190,24 @@
   padding-inline: 12px;
   border-radius: 9px;
   font-size: 0.875rem;
-  font-weight: 650;
+  font-weight: 700;
+  transition: background-color 140ms ease;
 }
 
 .primaryButton {
   width: 100%;
   margin-top: 18px;
-  background: var(--ink);
-  color: var(--canvas);
 }
 
-.primaryButton:hover:not(:disabled) {
-  opacity: 0.85;
+.primaryButton,
+.actionButton {
+  background: var(--accent);
+  color: white;
+}
+
+.primaryButton:hover:not(:disabled),
+.actionButton:hover:not(:disabled) {
+  background: var(--accent-hover);
 }
 
 .secondaryButton {
@@ -207,7 +216,7 @@
 
 .secondaryButton:hover,
 .textButton:hover:not(:disabled) {
-  background: var(--canvas);
+  background: var(--surface-blue);
 }
 
 .textButton {
@@ -215,6 +224,7 @@
 }
 
 .primaryButton:disabled,
+.actionButton:disabled,
 .textButton:disabled {
   cursor: default;
   opacity: 0.5;
@@ -227,9 +237,9 @@
 
 .feedback[role="alert"] {
   padding: 10px 12px;
-  border-inline-start: 2px solid var(--ink);
-  background: var(--canvas);
-  color: var(--ink);
+  border-inline-start: 2px solid #98432f;
+  background: #fff4f1;
+  color: #742e1d;
 }
 
 .createFeedback {
@@ -266,5 +276,211 @@
   .headerInner,
   .main {
     width: calc(100% - 32px);
+  }
+}
+
+:global(.dashboard).shell {
+  --canvas: #f1f5fc;
+  --ink: #101e36;
+  --muted: #495b76;
+  --panel: rgb(255 255 255 / 78%);
+  --line: #cbd7e8;
+  --accent: #244fc0;
+  --accent-hover: #1a3e9d;
+  --surface-blue: #e9f0ff;
+  --focus: #2453cf;
+  --panel-radius: 20px;
+  --panel-shadow: 0 10px 26px rgb(28 56 102 / 7%);
+  background: radial-gradient(ellipse at 90% 14%, #e4edfd, transparent 44%), var(--canvas);
+  font-family: system-ui, sans-serif;
+}
+
+.shell :is(a, button, input, textarea):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.headerInner :global(.brand) {
+  gap: 8px;
+  font-size: 1.2rem;
+}
+
+.headerInner :global(.brand-mark) {
+  background: var(--ink);
+  color: white;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(26px, 5vw, 58px);
+  border-radius: calc(var(--panel-radius) + 4px);
+  background: linear-gradient(112deg, #0e1b34 40%, #162f5b);
+  color: white;
+  box-shadow: 0 18px 40px rgb(18 44 86 / 15%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 35rem;
+}
+
+.plan {
+  display: inline-flex;
+  padding: 4px 10px;
+  border: 1px solid #5f7ba9;
+  border-radius: 999px;
+  background: #243c63;
+  color: #e5efff;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.hero h1 {
+  margin-top: 13px;
+  font-size: clamp(2.5rem, 6vw, 4.35rem);
+  font-weight: 680;
+  letter-spacing: -0.065em;
+  line-height: 1.02;
+}
+
+.hero p {
+  margin-top: 10px;
+  color: #d6e3f9;
+}
+
+.heroArt {
+  position: absolute;
+  inset: 0 0 0 47%;
+  background: radial-gradient(ellipse at 68% 72%, #406ccc85, transparent 59%),
+    repeating-linear-gradient(90deg, #719fe41f 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(0deg, #719fe41f 0 1px, transparent 1px 34px);
+  mask-image: linear-gradient(90deg, transparent, black 38%);
+  pointer-events: none;
+}
+
+.heroArt::before,
+.heroArt::after {
+  position: absolute;
+  inset: 15% -4% 0 16%;
+  border: 1px solid #82adf075;
+  border-radius: 50%;
+  box-shadow: 0 0 24px #72a4fc30, inset 0 0 24px #72a4fc30;
+  transform: rotate(-21deg) scaleY(0.7);
+  content: "";
+}
+
+.heroArt::after {
+  inset: 2% 7% -8% 27%;
+  transform: rotate(29deg) scaleY(0.62);
+}
+
+.projectList {
+  min-width: 0;
+}
+
+.listHeading .projectCount {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.projectIcon,
+.installButton {
+  color: var(--accent);
+}
+
+.empty p {
+  max-width: 28rem;
+}
+
+.empty .projectIcon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 4px;
+}
+
+.cardActions {
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.secondaryButton {
+  border-color: #b6c7df;
+  background: white;
+}
+
+.secondaryButton:hover {
+  background: var(--surface-blue);
+}
+
+.createPanel > p {
+  margin-top: 6px;
+}
+
+.routeState {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  padding: 48px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--panel-radius);
+  background: var(--panel);
+  box-shadow: var(--panel-shadow);
+  text-align: center;
+}
+
+.routeState h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.loadingMark {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #b6c7df;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 850ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(1turn); }
+}
+
+@media (max-width: 700px) {
+  .headerInner {
+    min-height: 62px;
+  }
+
+  .heroArt {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryButton,
+  .actionButton,
+  .secondaryButton,
+  .textButton {
+    transition: none;
+  }
+
+  .loadingMark {
+    animation: none;
   }
 }
