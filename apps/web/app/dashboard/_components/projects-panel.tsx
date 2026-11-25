@@ -124,6 +124,9 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
                   </>
                 ) : (
                   <div className={styles.cardActions}>
+                    <Link className={styles.secondaryButton} href={`/dashboard/projects/${project.id}/knowledge`} aria-label={`Manage knowledge for ${project.name}`}>
+                      Knowledge
+                    </Link>
                     <Link className={styles.secondaryButton} href={`/dashboard/projects/${project.id}/install`} aria-label={`Install widget for ${project.name}`}>
                       Install widget <span aria-hidden="true">→</span>
                     </Link>
