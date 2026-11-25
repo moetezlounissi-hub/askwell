@@ -12,10 +12,32 @@ export async function createSupabasePGlite() {
       create role anon nologin;
       create role authenticated nologin;
       create role service_role nologin bypassrls;
+      create role supabase_storage_admin nologin;
+      grant usage on schema public to supabase_storage_admin;
       alter default privileges in schema public
         grant all on tables to anon, authenticated, service_role;
       alter default privileges in schema public
         grant execute on functions to anon, authenticated, service_role;
+      -- Model the managed Storage tables and request-role access used by migrations.
+      create schema storage;
+      create table storage.buckets (
+        id text primary key,
+        name text not null,
+        public boolean default false,
+        file_size_limit bigint,
+        allowed_mime_types text[]
+      );
+      create table storage.objects (
+        bucket_id text references storage.buckets (id),
+        name text not null,
+        primary key (bucket_id, name)
+      );
+      alter table storage.buckets enable row level security;
+      alter table storage.objects enable row level security;
+      alter table storage.objects owner to supabase_storage_admin;
+      grant usage on schema storage to anon, authenticated, service_role, supabase_storage_admin;
+      grant select, insert, update, delete on storage.buckets, storage.objects
+        to anon, authenticated, service_role, supabase_storage_admin;
       create schema auth;
       create function auth.jwt() returns jsonb
         language sql stable set search_path = ''
@@ -33,7 +55,7 @@ export async function createSupabasePGlite() {
   }
 }
 
-type TestRole = "anon" | "authenticated" | "service_role";
+type TestRole = "anon" | "authenticated" | "service_role" | "supabase_storage_admin";
 
 export function runAs<T>(
   db: PGlite,

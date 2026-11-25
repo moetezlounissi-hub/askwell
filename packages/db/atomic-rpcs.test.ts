@@ -53,8 +53,9 @@ it("grants execution only to the intended roles and pins invoker search paths", 
     order by p.proname
   `);
   expect(rows).toEqual([
-    "consume_message", "create_project", "match_chunks", "owner_activity",
-    "reserve_knowledge_source", "save_chat_turn",
+    "claim_knowledge_upload", "collect_knowledge_cleanup", "complete_knowledge_cleanup",
+    "consume_message", "create_project", "delete_knowledge_source", "match_chunks",
+    "owner_activity", "reserve_knowledge_source", "save_chat_turn",
   ].map((proname) => ({
     proname, prosecdef: false, proconfig: ['search_path=""'], anon: false,
     authenticated: proname === "owner_activity",
