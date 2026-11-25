@@ -1,0 +1,270 @@
+.header {
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(var(--blur));
+}
+
+.headerInner,
+.main {
+  width: min(1160px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 5vw, 64px);
+  min-height: 68px;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 68px;
+  border-bottom: 2px solid currentColor;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.main {
+  padding-block: clamp(36px, 7vw, 88px) 64px;
+}
+
+.heading,
+.listHeading,
+.cardHeading,
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.heading {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.heading h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 650;
+  letter-spacing: -0.065em;
+  line-height: 1;
+}
+
+.heading p {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 345px);
+  align-items: start;
+  gap: clamp(24px, 4vw, 44px);
+  margin-top: 30px;
+}
+
+.listHeading {
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.listHeading h2,
+.createPanel h2 {
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.listHeading span,
+.empty p,
+.createPanel p {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.projectIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--canvas);
+}
+
+.empty,
+.card,
+.createPanel {
+  box-shadow: 0 12px 32px rgb(0 0 0 / 4%);
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 48px 22px;
+  text-align: center;
+}
+
+.empty h3,
+.cardHeading h3 {
+  font-size: 1.125rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.cards {
+  display: grid;
+  gap: 14px;
+}
+
+.card,
+.createPanel {
+  padding: clamp(18px, 3vw, 26px);
+}
+
+.cardActions,
+.cardEditor {
+  margin-top: 16px;
+}
+
+.cardActions {
+  flex-wrap: wrap;
+}
+
+.cardActions > a {
+  margin-inline-end: auto;
+}
+
+.createPanel form {
+  margin-top: 22px;
+}
+
+.createPanel label {
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  margin-block: 7px 5px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  border-color: color-mix(in srgb, var(--ink) 55%, white);
+  background: white;
+  color: var(--ink);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.createPanel .fieldHelp {
+  font-size: 0.8125rem;
+}
+
+.primaryButton,
+.secondaryButton,
+.textButton {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-inline: 12px;
+  border-radius: 9px;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.primaryButton {
+  width: 100%;
+  margin-top: 18px;
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+.primaryButton:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.secondaryButton {
+  border: 1px solid var(--line);
+}
+
+.secondaryButton:hover,
+.textButton:hover:not(:disabled) {
+  background: var(--canvas);
+}
+
+.textButton {
+  color: var(--muted);
+}
+
+.primaryButton:disabled,
+.textButton:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.feedback {
+  margin-block: 12px;
+  overflow-wrap: anywhere;
+}
+
+.feedback[role="alert"] {
+  padding: 10px 12px;
+  border-inline-start: 2px solid var(--ink);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.createFeedback {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.createFeedback a {
+  width: 100%;
+}
+
+.installHeading {
+  margin-block: 20px 24px;
+}
+
+.installHeading p {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .heading {
+    padding-bottom: 20px;
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 22px;
+  }
+
+  .empty {
+    padding-block: 24px;
+  }
+
+  .headerInner,
+  .main {
+    width: calc(100% - 32px);
+  }
+}

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOwnedProject } from "../../../../../lib/supabase/get-owned-project";
+import styles from "../../../dashboard.module.css";
 import { CopySnippet } from "./copy-snippet";
 import { getInstallSnippet } from "./snippet";
 
@@ -26,10 +27,14 @@ export default async function InstallPage({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Link className="underline" href="/dashboard">Back to projects</Link>
-      <div className="dashboard-title mt-4">
-        <h1>Install widget</h1>
-        <p className="break-words">{result.project.name}</p>
+      <Link className={styles.secondaryButton} href="/dashboard">
+        <span aria-hidden="true">←</span> Back to projects
+      </Link>
+      <div className={`${styles.heading} ${styles.installHeading}`}>
+        <div className="min-w-0">
+          <h1>Install widget</h1>
+          <p>{result.project.name}</p>
+        </div>
       </div>
       <section className="glass rounded-2xl p-5">
         {snippet ? (
