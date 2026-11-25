@@ -4,6 +4,7 @@ import { bootstrapAccount } from "../../lib/auth/bootstrap-account";
 import { listOwnerProjects } from "../../lib/projects/owner-projects";
 import { createOwnerClient } from "../../lib/supabase/owner";
 import { createServiceClient } from "../../lib/supabase/service";
+import styles from "./dashboard.module.css";
 import { ProjectsPanel } from "./_components/projects-panel";
 
 export const metadata: Metadata = {
@@ -25,8 +26,11 @@ export default async function Dashboard() {
 
   return (
     <>
-      <div className="dashboard-title">
-        <h1>Projects</h1>
+      <div className={styles.heading}>
+        <div>
+          <h1>Projects</h1>
+          <p>Set up a support widget for each website you manage.</p>
+        </div>
         <span className="pill">{account.plan === "pro" ? "Pro" : "Free"} plan</span>
       </div>
       <ProjectsPanel initialProjects={projects} />

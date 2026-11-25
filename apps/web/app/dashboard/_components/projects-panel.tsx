@@ -3,6 +3,7 @@
 import type { ApiError, CreateProjectResponse, Project, UpdateProjectResponse } from "@askwell/shared";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import styles from "../dashboard.module.css";
 
 type Operation = "create" | "rename" | "delete";
 
@@ -11,7 +12,7 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
   const [editing, setEditing] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [pending, setPending] = useState<Operation | null>(null);
-  const [feedback, setFeedback] = useState<{ text: string; error: boolean } | null>(null);
+  const [feedback, setFeedback] = useState<{ text: string; error: boolean; operation: Operation; projectId?: string } | null>(null);
 
   async function mutate(operation: Operation, projectId?: string, name?: FormDataEntryValue | null) {
     setPending(operation);
@@ -30,10 +31,12 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
         throw new Error(result?.error?.message ?? "Could not save changes. Try again.");
       }
 
+      let savedProjectId = projectId;
       if (operation === "delete") {
         setProjects((current) => current.filter((project) => project.id !== projectId));
       } else {
         const { project }: CreateProjectResponse | UpdateProjectResponse = await response.json();
+        savedProjectId = project.id;
         setProjects((current) =>
           operation === "create"
             ? [project, ...current]
@@ -42,12 +45,19 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
       }
       setEditing(null);
       setDeleting(null);
-      setFeedback({ text: { create: "Project created.", rename: "Project renamed.", delete: "Project deleted." }[operation], error: false });
+      setFeedback({
+        text: { create: "Project created.", rename: "Project renamed.", delete: "Project deleted." }[operation],
+        error: false,
+        operation,
+        projectId: savedProjectId,
+      });
       return true;
     } catch (error) {
       setFeedback({
         text: error instanceof Error ? error.message : "Could not save changes. Try again.",
         error: true,
+        operation,
+        projectId,
       });
       return false;
     } finally {
@@ -62,66 +72,108 @@ export function ProjectsPanel({ initialProjects }: { initialProjects: Project[] 
   }
 
   return (
-    <section aria-label="Manage projects" aria-busy={pending !== null}>
-      <form className="glass mb-5 rounded-2xl p-5" onSubmit={create}>
-        <label htmlFor="new-project-name" className="block font-semibold">Project name</label>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <input id="new-project-name" name="name" required maxLength={100}
-            className="min-w-0 flex-1 rounded-lg border border-black/25 bg-white px-3 py-2" />
-          <button className="button button-small disabled:opacity-50" disabled={pending !== null}>
+    <div className={styles.workspace}>
+      <section aria-labelledby="project-list-title">
+        <header className={styles.listHeading}>
+          <h2 id="project-list-title">Your projects</h2>
+          <span>{projects.length} {projects.length === 1 ? "project" : "projects"}</span>
+        </header>
+        {feedback && !feedback.error && feedback.operation !== "create" && (
+          <p className={styles.feedback} role="status">{feedback.text}</p>
+        )}
+        {projects.length === 0 ? (
+          <div className={`glass ${styles.empty}`}>
+            <span className={styles.projectIcon} aria-hidden="true">
+              <ProjectIcon />
+            </span>
+            <h3>No projects yet</h3>
+            <p>Create a project to get the install code for your first support widget.</p>
+          </div>
+        ) : (
+          <ul className={styles.cards}>
+            {projects.map((project) => (
+              <li key={project.id} className={`glass ${styles.card}`}>
+                <div className={styles.cardHeading}>
+                  <span className={styles.projectIcon} aria-hidden="true"><ProjectIcon /></span>
+                  <h3>{project.name}</h3>
+                </div>
+                {editing === project.id ? (
+                  <form className={styles.cardEditor} onSubmit={(event) => {
+                    event.preventDefault();
+                    void mutate("rename", project.id, new FormData(event.currentTarget).get("name"));
+                  }}>
+                    <label htmlFor={`name-${project.id}`} className="block font-semibold">New project name</label>
+                    <input id={`name-${project.id}`} name="name" defaultValue={project.name} required maxLength={100}
+                      className={styles.input} disabled={pending !== null} />
+                    <div className="flex flex-wrap gap-3">
+                      <button className="button button-small disabled:opacity-50" disabled={pending !== null}>
+                        {pending === "rename" ? "Saving…" : "Save name"}
+                      </button>
+                      <button type="button" className={styles.textButton} disabled={pending !== null} onClick={() => setEditing(null)}>Cancel</button>
+                    </div>
+                  </form>
+                ) : deleting === project.id ? (
+                  <>
+                    <p className="mt-4 mb-3">Permanently delete this project and its data?</p>
+                    <div className="flex flex-wrap gap-3">
+                      <button className="button button-small disabled:opacity-50" disabled={pending !== null} onClick={() => void mutate("delete", project.id)}>
+                        {pending === "delete" ? "Deleting…" : "Delete project"}
+                      </button>
+                      <button className={styles.textButton} disabled={pending !== null} onClick={() => setDeleting(null)}>Cancel</button>
+                    </div>
+                  </>
+                ) : (
+                  <div className={styles.cardActions}>
+                    <Link className={styles.secondaryButton} href={`/dashboard/projects/${project.id}/install`} aria-label={`Install widget for ${project.name}`}>
+                      Install widget <span aria-hidden="true">→</span>
+                    </Link>
+                    <button className={styles.textButton} aria-label={`Rename ${project.name}`} disabled={pending !== null} onClick={() => { setDeleting(null); setEditing(project.id); }}>Rename</button>
+                    <button className={styles.textButton} aria-label={`Delete ${project.name}`} disabled={pending !== null} onClick={() => { setEditing(null); setDeleting(project.id); }}>Delete</button>
+                  </div>
+                )}
+                {feedback?.error && feedback.projectId === project.id && (
+                  <p className={styles.feedback} role="alert">{feedback.text}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className={`glass ${styles.createPanel}`} aria-labelledby="create-project-title">
+        <h2 id="create-project-title">Create a project</h2>
+        <p>Give your project a name you’ll recognize.</p>
+        <form onSubmit={create}>
+          <label htmlFor="new-project-name">Project name</label>
+          <input id="new-project-name" name="name" required maxLength={100} pattern={String.raw`.*\S.*`}
+            placeholder="e.g. Acme Help Center" aria-describedby="project-name-help" title="Enter a name with at least one non-space character."
+            disabled={pending !== null} className={styles.input} />
+          <p id="project-name-help" className={styles.fieldHelp}>Enter up to 100 characters.</p>
+          <button className={styles.primaryButton} disabled={pending !== null}>
+            <span aria-hidden="true">+</span>
             {pending === "create" ? "Creating…" : "Create project"}
           </button>
-        </div>
-      </form>
-      {feedback && <p className="mb-4 font-medium" role={feedback.error ? "alert" : "status"}>{feedback.text}</p>}
-      {projects.length === 0 ? (
-        <div className="empty-state glass">
-          <h2>No projects yet</h2>
-          <p>Create your first project to start setting up your support widget.</p>
-        </div>
-      ) : (
-        <ul className="grid gap-3" aria-label="Your projects">
-          {projects.map((project) => (
-            <li key={project.id} className="glass rounded-2xl p-5">
-              <h2 className="mb-3 break-words text-lg font-semibold">{project.name}</h2>
-              {editing === project.id ? (
-                <form onSubmit={(event) => {
-                  event.preventDefault();
-                  void mutate("rename", project.id, new FormData(event.currentTarget).get("name"));
-                }}>
-                  <label htmlFor={`name-${project.id}`} className="block font-semibold">New project name</label>
-                  <input id={`name-${project.id}`} name="name" defaultValue={project.name} required maxLength={100}
-                    className="my-2 w-full rounded-lg border border-black/25 bg-white px-3 py-2" />
-                  <div className="flex flex-wrap gap-3">
-                    <button className="button button-small disabled:opacity-50" disabled={pending !== null}>
-                      {pending === "rename" ? "Saving…" : "Save name"}
-                    </button>
-                    <button type="button" className="underline" disabled={pending !== null} onClick={() => setEditing(null)}>Cancel</button>
-                  </div>
-                </form>
-              ) : deleting === project.id ? (
-                <>
-                  <p className="mb-3">Permanently delete this project and its data?</p>
-                  <div className="flex flex-wrap gap-3">
-                    <button className="button button-small disabled:opacity-50" disabled={pending !== null} onClick={() => void mutate("delete", project.id)}>
-                      {pending === "delete" ? "Deleting…" : "Delete project"}
-                    </button>
-                    <button className="underline" disabled={pending !== null} onClick={() => setDeleting(null)}>Cancel</button>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-wrap gap-4">
-                  <Link className="underline" href={`/dashboard/projects/${project.id}/install`} aria-label={`Install widget for ${project.name}`}>
-                    Install
-                  </Link>
-                  <button className="underline disabled:opacity-50" aria-label={`Rename ${project.name}`} disabled={pending !== null} onClick={() => { setDeleting(null); setEditing(project.id); }}>Rename</button>
-                  <button className="underline disabled:opacity-50" aria-label={`Delete ${project.name}`} disabled={pending !== null} onClick={() => { setEditing(null); setDeleting(project.id); }}>Delete</button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+        </form>
+        {feedback?.operation === "create" && (
+          <div className={styles.createFeedback}>
+            <p className={styles.feedback} role={feedback.error ? "alert" : "status"}>{feedback.text}</p>
+            {!feedback.error && feedback.projectId && (
+              <Link className={styles.secondaryButton} href={`/dashboard/projects/${feedback.projectId}/install`}>
+                Continue to installation <span aria-hidden="true">→</span>
+              </Link>
+            )}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function ProjectIcon() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="4" width="18" height="14" rx="2" />
+      <path d="M3 8h18M8 21h8m-4-3v3" strokeLinecap="round" />
+    </svg>
   );
 }
