@@ -16,20 +16,3 @@ export async function removeKnowledgeFile(
   });
   if (ledgerError) throw ledgerError;
 }
-
-export async function runKnowledgeCleanup(client: ReturnType<typeof createServiceClient>) {
-  const { data: pending, error } = await client.rpc("collect_knowledge_cleanup");
-  if (error) throw error;
-
-  let removed = 0;
-  let failed = 0;
-  for (const { storage_key } of pending) {
-    try {
-      await removeKnowledgeFile(client, storage_key);
-      removed++;
-    } catch {
-      failed++;
-    }
-  }
-  return { removed, failed };
-}

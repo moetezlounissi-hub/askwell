@@ -1,28 +1,18 @@
 import { expect, it, vi } from "vitest";
-import { createServiceClient } from "../../supabase/service";
-import { runKnowledgeCleanup } from "./cleanup";
-
-const { rpc, remove } = vi.hoisted(() => ({ rpc: vi.fn(), remove: vi.fn() }));
-vi.mock("server-only", () => ({}));
-vi.mock("../../supabase/service", () => ({
-  createServiceClient: () => ({ rpc, storage: { from: () => ({ remove }) } }),
-}));
+import { runKnowledgeCleanup } from "../../../../../supabase/functions/knowledge-cleanup/cleanup";
 
 it("acknowledges only successful removals and retries remaining work on a new run", async () => {
-  const first = { storage_key: "project/first.pdf" };
-  const second = { storage_key: "project/second.pdf" };
-  rpc.mockImplementation((name: string) => {
-    if (name === "collect_knowledge_cleanup") return { data: [first, second] };
-    return {};
-  });
-  remove.mockResolvedValueOnce({ error: new Error("Storage unavailable") });
-  remove.mockResolvedValue({ error: null });
+  const first = "project/first.pdf";
+  const second = "project/second.pdf";
+  const collect = vi.fn().mockResolvedValueOnce([first, second]).mockResolvedValueOnce([first]);
+  const remove = vi.fn()
+    .mockRejectedValueOnce(new Error("Storage unavailable"))
+    .mockResolvedValue(undefined);
+  const acknowledge = vi.fn().mockResolvedValue(undefined);
 
-  expect(await runKnowledgeCleanup(createServiceClient())).toEqual({ removed: 1, failed: 1 });
-  expect(rpc).not.toHaveBeenCalledWith("complete_knowledge_cleanup", { p_storage_key: first.storage_key });
-  expect(rpc).toHaveBeenCalledWith("complete_knowledge_cleanup", { p_storage_key: second.storage_key });
+  expect(await runKnowledgeCleanup({ collect, remove, acknowledge })).toEqual({ removed: 1, failed: 1 });
+  expect(acknowledge).toHaveBeenCalledExactlyOnceWith(second);
 
-  rpc.mockImplementation((name: string) => name === "collect_knowledge_cleanup" ? { data: [first] } : {});
-  expect(await runKnowledgeCleanup(createServiceClient())).toEqual({ removed: 1, failed: 0 });
-  expect(rpc).toHaveBeenCalledWith("complete_knowledge_cleanup", { p_storage_key: first.storage_key });
+  expect(await runKnowledgeCleanup({ collect, remove, acknowledge })).toEqual({ removed: 1, failed: 0 });
+  expect(acknowledge).toHaveBeenLastCalledWith(first);
 });
