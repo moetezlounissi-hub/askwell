@@ -244,6 +244,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_knowledge_upload: {
+        Args: { p_owner_id: string; p_project_id: string; p_source_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          project_id: string
+          status: string
+          storage_key: string | null
+          title: string
+          type: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "knowledge_sources"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      collect_knowledge_cleanup: {
+        Args: never
+        Returns: {
+          storage_key: string
+        }[]
+      }
+      complete_knowledge_cleanup: {
+        Args: { p_storage_key: string }
+        Returns: undefined
+      }
       consume_message: {
         Args: {
           p_conversation_id?: string
@@ -269,6 +297,12 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      delete_knowledge_source: {
+        Args: { p_owner_id: string; p_source_id: string }
+        Returns: {
+          storage_key: string
+        }[]
       }
       match_chunks: {
         Args: { p_embedding: string; p_project_id: string }
