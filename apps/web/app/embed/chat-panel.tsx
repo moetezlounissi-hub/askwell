@@ -2,23 +2,25 @@
 
 import { APP_NAME, DEFAULT_WIDGET_CONFIG, MAX_MESSAGE_CHARACTERS } from "@askwell/shared";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { sendWidgetMessage } from "../../lib/widget/embed/chat";
 import { isParentInit, type PanelMessage } from "../../lib/widget/embed/protocol";
 import { getVisitorId } from "../../lib/widget/embed/visitor";
 import styles from "./panel.module.css";
 
 const PREFERRED_HEIGHT = 560;
-const MOCK_REPLY_DELAY_MS = 1000;
 
 type Message = { id: string; author: "visitor" | "support"; text: string };
 
-export function ChatPanel({ parentOrigin }: { parentOrigin: string | null }) {
+export function ChatPanel({ parentOrigin, publicKey }: { parentOrigin: string | null; publicKey: string | null }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [verifiedOrigin, setVerifiedOrigin] = useState<string | null>(null);
   const visitorId = useRef<string | null>(null);
   const verifiedParent = useRef<{ window: Window; origin: string } | null>(null);
-  const replyTimer = useRef<number | null>(null);
+  const request = useRef<AbortController | null>(null);
+  const conversationId = useRef<string | undefined>(undefined);
   const messageList = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,38 +48,49 @@ export function ChatPanel({ parentOrigin }: { parentOrigin: string | null }) {
   }, [parentOrigin]);
 
   useEffect(() => () => {
-    if (replyTimer.current !== null) window.clearTimeout(replyTimer.current);
+    request.current?.abort();
   }, []);
 
   useEffect(() => {
     const list = messageList.current;
     if (list) list.scrollTop = list.scrollHeight;
-  }, [messages, isTyping]);
+  }, [messages, isTyping, error]);
 
   function sendToParent(message: PanelMessage) {
     const parent = verifiedParent.current;
     parent?.window.postMessage(message, parent.origin);
   }
 
-  function send(event: FormEvent<HTMLFormElement>) {
+  async function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = draft.trim();
-    if (!text || text.length > MAX_MESSAGE_CHARACTERS || replyTimer.current !== null) return;
+    if (!publicKey || !text || text.length > MAX_MESSAGE_CHARACTERS || request.current) return;
 
-    const id = `${visitorId.current ??= getVisitorId(window)}-${messages.length}`;
+    const visitor = visitorId.current ??= getVisitorId(window);
+    const id = `${visitor}-${messages.length}`;
+    const controller = new AbortController();
+    request.current = controller;
     setMessages((previous) => [...previous, { id, author: "visitor", text }]);
     setDraft("");
+    setError(null);
     setIsTyping(true);
-    replyTimer.current = window.setTimeout(() => {
-      replyTimer.current = null;
-      setMessages((previous) => [...previous, {
-        id: `${id}-reply`,
-        author: "support",
-        text: "Thanks for your message! This is a demo reply.",
-      }]);
-      setIsTyping(false);
+    try {
+      const reply = await sendWidgetMessage({
+        key: publicKey, visitorId: visitor, conversationId: conversationId.current, message: text,
+      }, controller.signal);
+      if (controller.signal.aborted) return;
+
+      conversationId.current = reply.conversationId;
+      setMessages((previous) => [...previous, { id: `${id}-reply`, author: "support", text: reply.reply }]);
       sendToParent({ type: "askwell:unread", count: 1 });
-    }, MOCK_REPLY_DELAY_MS);
+    } catch (failure) {
+      if (!controller.signal.aborted) {
+        setError(failure instanceof Error ? failure.message : "Couldn’t send your message. Please try again.");
+      }
+    } finally {
+      request.current = null;
+      if (!controller.signal.aborted) setIsTyping(false);
+    }
   }
 
   return (
@@ -91,13 +104,14 @@ export function ChatPanel({ parentOrigin }: { parentOrigin: string | null }) {
         )}
       </header>
       <div ref={messageList} className={styles.messages} role="log" aria-label="Chat messages">
-        {messages.length === 0 && <p className={styles.empty}>How can we help?</p>}
+        {messages.length === 0 && <p className={styles.empty}>{publicKey ? "How can we help?" : "Chat is unavailable."}</p>}
         {messages.map(({ id, author, text }) => (
           <p key={id} className={author === "visitor" ? styles.visitor : styles.reply}>
             <span className={styles.srOnly}>{author === "visitor" ? "You: " : "Support: "}</span>
             {text}
           </p>
         ))}
+        {error && <p role="status" className={styles.typing}>{error}</p>}
         {isTyping && <p className={styles.typing}>Support is typing…</p>}
       </div>
       <form className={styles.composer} onSubmit={send}>
@@ -109,8 +123,9 @@ export function ChatPanel({ parentOrigin }: { parentOrigin: string | null }) {
           maxLength={MAX_MESSAGE_CHARACTERS}
           placeholder="Write a message…"
           autoComplete="off"
+          disabled={!publicKey}
         />
-        <button type="submit" disabled={isTyping || !draft.trim()}>Send</button>
+        <button type="submit" disabled={!publicKey || isTyping || !draft.trim()}>Send</button>
       </form>
       {DEFAULT_WIDGET_CONFIG.showBadge && (
         <p className={styles.badge}>Powered by {APP_NAME}</p>

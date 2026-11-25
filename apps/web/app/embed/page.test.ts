@@ -11,3 +11,13 @@ describe("/embed", () => {
     expect(panel.props.parentOrigin).toBe(expected);
   });
 });
+
+it.each([
+  ["pk_support", "pk_support"],
+  [["pk_support", "pk_other"], null],
+  ["invalid", null],
+  [undefined, null],
+])("passes only a valid public key to the panel", async (key, expected) => {
+  const panel = await EmbedPage({ searchParams: Promise.resolve({ key }) });
+  expect(panel.props.publicKey).toBe(expected);
+});
